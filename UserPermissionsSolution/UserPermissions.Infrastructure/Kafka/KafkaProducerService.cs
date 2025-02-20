@@ -11,7 +11,7 @@ namespace UserPermissions.Infrastructure.Kafka
             _config = new ProducerConfig { BootstrapServers = bootstrapServers };
         }
 
-        public async Task SendMessage(string topic, string message)
+        public async Task SendMessageAsync(string topic, string message)
         {
             using (var producer = new ProducerBuilder<Null, string>(_config).Build())
             {
