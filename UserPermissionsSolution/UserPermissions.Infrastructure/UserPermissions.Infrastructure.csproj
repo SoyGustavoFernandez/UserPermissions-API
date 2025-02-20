@@ -7,10 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Kafka\" />
-    <Folder Include="Elasticsearch\" />
     <Folder Include="Logging\" />
-    <Folder Include="Repositories\" />
   </ItemGroup>
 
   <ItemGroup>

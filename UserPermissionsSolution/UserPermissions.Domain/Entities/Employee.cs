@@ -4,7 +4,6 @@ namespace UserPermissions.Domain.Entities
 {
     public class Employee
     {
-        [Key]
         public int EmployeeID { get; set; }
         public required string FirstName { get; set; }
         public required string LastName { get; set; }

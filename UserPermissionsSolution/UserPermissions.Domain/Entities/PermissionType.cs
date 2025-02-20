@@ -4,7 +4,6 @@ namespace UserPermissions.Domain.Entities
 {
     public class PermissionType
     {
-        [Key]
         public int PermissionTypeID { get; set; }
         public required string Name { get; set; }
         public required string Description { get; set; }
