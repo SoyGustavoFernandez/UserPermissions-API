@@ -32,7 +32,10 @@ namespace UserPermissions.Infrastructure.Repositories
 
         public async Task<IEnumerable<Permission>> GetAllAsync()
         {
-            return await _context.Permissions.ToListAsync();
+            return await _context.Permissions
+                .Include(p => p.Employee)
+                .Include(p => p.PermissionType)
+                .ToListAsync();
         }
 
         public async Task<Permission> GetByIdAsync(int id)
