@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\UserPermissions.Domain\UserPermissions.Domain.csproj" />
+    <ProjectReference Include="..\UserPermissions.Infrastructure\UserPermissions.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

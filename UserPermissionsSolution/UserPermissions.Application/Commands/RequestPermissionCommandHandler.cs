@@ -30,7 +30,7 @@ namespace UserPermissions.Application.Commands
 
             await _permissionRepository.AddAsync(permission);
 
-            await _kafkaProducer.SendMessageAsync("permissions", $"Permission requested: {permission.Id}");
+            await _kafkaProducer.SendMessageAsync("permissions", $"Permission requested: {permission.PermissionID}");
 
             await _elasticsearchService.IndexPermissionAsync(permission);
 
