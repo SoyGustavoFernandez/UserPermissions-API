@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
+using UserPermissions.Domain.Interfaces;
 using UserPermissions.Infrastructure.Data;
 using UserPermissions.Infrastructure.Elasticsearch;
 using UserPermissions.Infrastructure.Kafka;
+using UserPermissions.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +37,12 @@ builder.Services.AddSingleton<ElasticsearchService>(sp =>
     var uri = builder.Configuration["Elasticsearch:Uri"];
     return new ElasticsearchService(uri);
 });
+
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IPermissionTypeRepository, PermissionTypeRepository>();
 
 var app = builder.Build();
 
