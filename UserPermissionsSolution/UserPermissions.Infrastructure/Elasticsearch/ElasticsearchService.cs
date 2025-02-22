@@ -3,7 +3,7 @@ using UserPermissions.Domain.Entities;
 
 namespace UserPermissions.Infrastructure.Elasticsearch
 {
-    public class ElasticsearchService
+    public class ElasticsearchService : IElasticsearchService
     {
         private readonly ElasticsearchClient _client;
 

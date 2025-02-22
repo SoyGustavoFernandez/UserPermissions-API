@@ -2,7 +2,7 @@
 
 namespace UserPermissions.Infrastructure.Kafka
 {
-    public class KafkaProducerService
+    public class KafkaProducerService : IKafkaProducerService
     {
         private readonly ProducerConfig _config;
 

@@ -22,13 +22,13 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddSingleton<KafkaProducerService>(sp =>
+builder.Services.AddSingleton<IKafkaProducerService>(sp =>
 {
     var bootstrapServers = builder.Configuration["Kafka:BootstrapServers"];
     return new KafkaProducerService(bootstrapServers);
 });
 
-builder.Services.AddSingleton<ElasticsearchService>(sp =>
+builder.Services.AddSingleton<IElasticsearchService>(sp =>
 {
     var uri = builder.Configuration["Elasticsearch:Uri"];
     return new ElasticsearchService(uri);

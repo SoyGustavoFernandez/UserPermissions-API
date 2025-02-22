@@ -9,10 +9,10 @@ namespace UserPermissions.Application.Commands
     public class RequestPermissionCommandHandler : IRequestHandler<RequestPermissionCommand, bool>
     {
         private readonly IPermissionRepository _permissionRepository;
-        private readonly KafkaProducerService _kafkaProducer;
-        private readonly ElasticsearchService _elasticsearchService;
+        private readonly IKafkaProducerService _kafkaProducer;
+        private readonly IElasticsearchService _elasticsearchService;
 
-        public RequestPermissionCommandHandler(IPermissionRepository permissionRepository, KafkaProducerService kafkaProducer, ElasticsearchService elasticsearchService)
+        public RequestPermissionCommandHandler(IPermissionRepository permissionRepository, IKafkaProducerService kafkaProducer, IElasticsearchService elasticsearchService)
         {
             _permissionRepository = permissionRepository;
             _kafkaProducer = kafkaProducer;
@@ -21,20 +21,29 @@ namespace UserPermissions.Application.Commands
 
         public async Task<bool> Handle(RequestPermissionCommand request, CancellationToken cancellationToken)
         {
-            var permission = new Permission
+            try
             {
-                EmployeeID = request.EmployeeId,
-                PermissionTypeID = request.PermissionTypeId,
-                RequestDate = DateTime.UtcNow
-            };
+                var permission = new Permission
+                {
+                    EmployeeID = request.EmployeeId,
+                    PermissionTypeID = request.PermissionTypeId,
+                    RequestDate = DateTime.UtcNow
+                };
 
-            await _permissionRepository.AddAsync(permission);
+                await _permissionRepository.AddAsync(permission);
 
-            await _kafkaProducer.SendMessageAsync("permissions", $"Permission requested: {permission.PermissionID}");
+                await _kafkaProducer.SendMessageAsync("permissions", $"Permission requested: {permission.PermissionID}");
 
-            await _elasticsearchService.IndexPermissionAsync(permission);
+                await _elasticsearchService.IndexPermissionAsync(permission);
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+
+                return false;
+            }
         }
     }
 }
