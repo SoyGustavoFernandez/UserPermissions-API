@@ -6,7 +6,7 @@ namespace UserPermissions.Domain.Interfaces
     {
         Task<IEnumerable<Permission>> GetAllAsync();
         Task<Permission> GetByIdAsync(int id);
-        Task AddAsync(Permission permission);
+        Task AddAsync(Permission permission, CancellationToken cancellationToken = default);
         Task UpdateAsync(Permission permission);
         Task DeleteAsync(int id);
     }

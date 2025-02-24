@@ -1,4 +1,7 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
+using Serilog;
+using UserPermissions.Application.DTOs;
 using UserPermissions.Domain.Entities;
 using UserPermissions.Domain.Interfaces;
 using UserPermissions.Infrastructure.Elasticsearch;
@@ -11,38 +14,54 @@ namespace UserPermissions.Application.Commands
         private readonly IPermissionRepository _permissionRepository;
         private readonly IKafkaProducerService _kafkaProducer;
         private readonly IElasticsearchService _elasticsearchService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RequestPermissionCommandHandler(IPermissionRepository permissionRepository, IKafkaProducerService kafkaProducer, IElasticsearchService elasticsearchService)
+        public RequestPermissionCommandHandler(IPermissionRepository permissionRepository, IKafkaProducerService kafkaProducer, IElasticsearchService elasticsearchService, IUnitOfWork unitOfWork)
         {
             _permissionRepository = permissionRepository;
             _kafkaProducer = kafkaProducer;
             _elasticsearchService = elasticsearchService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(RequestPermissionCommand request, CancellationToken cancellationToken)
         {
-            try
+            using (var transaction = await _unitOfWork.BeginTransactionAsync())
             {
-                var permission = new Permission
+                try
                 {
-                    EmployeeID = request.EmployeeId,
-                    PermissionTypeID = request.PermissionTypeId,
-                    RequestDate = DateTime.UtcNow
-                };
+                    var permission = new Permission
+                    {
+                        EmployeeID = request.EmployeeId,
+                        PermissionTypeID = request.PermissionTypeId,
+                        RequestDate = DateTime.UtcNow
+                    };
 
-                await _permissionRepository.AddAsync(permission);
+                    await _permissionRepository.AddAsync(permission);
+                    await _unitOfWork.CompleteAsync();
 
-                await _kafkaProducer.SendMessageAsync("permissions", $"Permission requested: {permission.PermissionID}");
+                    await _elasticsearchService.IndexPermissionAsync(permission);
 
-                await _elasticsearchService.IndexPermissionAsync(permission);
+                    var kafkaMessage = new KafkaMessageDto
+                    {
+                        Id = Guid.NewGuid(),
+                        NameOperation = "request",
+                        PermissionId = permission.PermissionID,
+                        Timestamp = DateTime.UtcNow
+                    };
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
+                    await _kafkaProducer.SendMessageAsync("permissions-operations", JsonConvert.SerializeObject(kafkaMessage));
 
-                return false;
+                    await transaction.CommitAsync();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    Log.Error(ex, $"Error en RequestPermissionCommandHandler para EmployeeID: {request.EmployeeId}");
+                    return false;
+                }
             }
         }
     }

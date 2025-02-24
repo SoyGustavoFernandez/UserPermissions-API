@@ -17,7 +17,6 @@ namespace UserPermissions.Infrastructure.Repositories
         public async Task AddAsync(Employee employee)
         {
             await _context.AddAsync(employee);
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
@@ -26,7 +25,6 @@ namespace UserPermissions.Infrastructure.Repositories
             if(employee != null)
             {
                 _context.Remove(employee);
-                await _context.SaveChangesAsync();
             }
         }
 
@@ -43,7 +41,7 @@ namespace UserPermissions.Infrastructure.Repositories
         public async Task UpdateAsync(Employee employee)
         {
             _context.Employees.Update(employee);
-            await _context.SaveChangesAsync();
+            await Task.CompletedTask;
         }
     }
 }

@@ -14,10 +14,9 @@ namespace UserPermissions.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task AddAsync(Permission permission)
+        public async Task AddAsync(Permission permission, CancellationToken cancellationToken = default)
         {
-            await _context.Permissions.AddAsync(permission);
-            await _context.SaveChangesAsync();
+            await _context.Permissions.AddAsync(permission, cancellationToken);
         }
 
         public async Task DeleteAsync(int id)
@@ -26,7 +25,6 @@ namespace UserPermissions.Infrastructure.Repositories
             if (permission != null)
             {
                 _context.Permissions.Remove(permission);
-                await _context.SaveChangesAsync();
             }
         }
 
@@ -46,7 +44,7 @@ namespace UserPermissions.Infrastructure.Repositories
         public Task UpdateAsync(Permission permission)
         {
             _context.Permissions.Update(permission);
-            return _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
     }
 }

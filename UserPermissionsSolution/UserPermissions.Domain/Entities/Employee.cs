@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace UserPermissions.Domain.Entities
+﻿namespace UserPermissions.Domain.Entities
 {
     public class Employee
     {

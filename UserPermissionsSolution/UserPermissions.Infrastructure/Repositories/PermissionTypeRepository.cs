@@ -17,7 +17,6 @@ namespace UserPermissions.Infrastructure.Repositories
         public async Task AddAsync(PermissionType permissionType)
         {
             await _context.PermissionTypes.AddAsync(permissionType);
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
@@ -26,7 +25,6 @@ namespace UserPermissions.Infrastructure.Repositories
             if(permissionType != null)
             {
                 _context.Remove(permissionType);
-                await _context.SaveChangesAsync();
             }
         }
 
@@ -43,7 +41,7 @@ namespace UserPermissions.Infrastructure.Repositories
         public async Task UpdateAsync(PermissionType permissionType)
         {
             _context.PermissionTypes.Update(permissionType);
-            await _context.SaveChangesAsync();
+            await Task.CompletedTask;
         }
     }
 }
