@@ -1,0 +1,141 @@
+services:
+  elasticsearch:
+    platform: linux/amd64
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTIC_PASSWORD=JeFe#7099
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    ports:
+      - "9210:9200"
+      - "9310:9300"
+    volumes:
+      - elastic_data:/usr/share/elasticsearch/data    
+    networks:
+      - permissions-net
+  
+  kibana:
+    platform: linux/amd64
+    image: docker.elastic.co/kibana/kibana:8.6.2
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch    
+    networks:
+      - permissions-net
+  
+  zookeeper:
+    platform: linux/amd64
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    restart: always
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"    
+    networks:
+      - permissions-net
+
+  kafka:
+    platform: linux/amd64
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    restart: always
+    depends_on:
+      - zookeeper
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:9092,EXTERNAL://localhost:9093"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - permissions-net
+
+  redis:
+    platform: linux/amd64
+    image: redis:latest
+    container_name: redisContainer
+    restart: always
+    ports:
+     - "6379:6379"
+    volumes:
+        - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]    
+    networks:
+      - permissions-net
+
+  sqlserver_docker:
+    platform: linux/amd64
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_docker
+    environment:
+      - ACCEPT_EULA=Y
+      - "MSSQL_SA_PASSWORD=JeFe#7099"
+      - MSSQL_AGENT_ENABLED=true
+      - MSSQL_MEMORY_LIMIT_MB=1536
+      - MSSQL_LCID=1033
+      - MSSQL_COLLATION=SQL_Latin1_General_CP1_CI_AS
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+    ports:
+      - "14333:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+      - ./sql_server_config:/usr/config
+    user: mssql
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 300 bash -c 'until /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P \"JeFe#7099\" -Q \"SELECT 1\"; do sleep 5; done' || exit 1"]
+      start_period: 30s
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - permissions-net
+
+  permissions-api:
+    build:
+      context: .
+      dockerfile: UserPermissions.API/Dockerfile
+    container_name: permissions-api
+    ports:
+      - "5000:80"
+    depends_on:
+      sqlserver_docker:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_started
+      kafka:
+        condition: service_started
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ConnectionStrings__DefaultConnection=Server=sqlserver_docker;Database=UserPermissionsDB;User Id=sa;Password=JeFe#7099;TrustServerCertificate=True;
+      - Kafka__BootstrapServers=kafka:9092
+      - Elasticsearch__Uri=http://elasticsearch:9200
+    networks:
+      - permissions-net
+
+volumes:
+  elastic_data:
+    driver: local
+  redis_data:
+    driver: local
+  sql_data:
+    driver: local
+
+networks:
+  permissions-net:
+    driver: bridge

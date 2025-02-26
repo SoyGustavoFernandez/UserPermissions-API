@@ -3,15 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserPermissions.API", "UserPermissions.API\UserPermissions.API.csproj", "{1A0B563F-2901-4F7D-85AB-5B66B964D342}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserPermissions.API", "UserPermissions.API\UserPermissions.API.csproj", "{1A0B563F-2901-4F7D-85AB-5B66B964D342}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserPermissions.Application", "UserPermissions.Application\UserPermissions.Application.csproj", "{E9DB8D04-F957-46FA-97BD-6DA8354E9DB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserPermissions.Application", "UserPermissions.Application\UserPermissions.Application.csproj", "{E9DB8D04-F957-46FA-97BD-6DA8354E9DB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserPermissions.Domain", "UserPermissions.Domain\UserPermissions.Domain.csproj", "{9D34A6BE-7200-47A8-A751-B767591D9C91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserPermissions.Domain", "UserPermissions.Domain\UserPermissions.Domain.csproj", "{9D34A6BE-7200-47A8-A751-B767591D9C91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserPermissions.Infrastructure", "UserPermissions.Infrastructure\UserPermissions.Infrastructure.csproj", "{F7E0ADCF-3376-49D7-822C-98816F6B4DE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserPermissions.Infrastructure", "UserPermissions.Infrastructure\UserPermissions.Infrastructure.csproj", "{F7E0ADCF-3376-49D7-822C-98816F6B4DE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserPermissions.Tests", "UserPermissions.Tests\UserPermissions.Tests.csproj", "{1A87FB42-E184-4BFA-97F0-AD7AB3C7E723}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserPermissions.Tests", "UserPermissions.Tests\UserPermissions.Tests.csproj", "{1A87FB42-E184-4BFA-97F0-AD7AB3C7E723}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{63D7380B-2B68-400A-A36B-E07D75B80E25}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
