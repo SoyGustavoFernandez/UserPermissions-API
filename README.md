@@ -1,6 +1,6 @@
 # UserPermissions-API 🚀
 
-Este repositorio contiene la solución al challenge técnico para la posición de **Tech Lead Backend** en **N5 Company**. El proyecto es una API robusta y escalable para la gestión de permisos de usuarios, desarrollada con las mejores prácticas y tecnologías modernas.
+Este proyecto es una API robusta y escalable para la gestión de permisos de usuarios, desarrollada con las mejores prácticas y tecnologías modernas.
 
 ## 🛠️ Tecnologías usadas
 - **.NET Core 8.0** <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dotnetcore/dotnetcore-original.svg" width="30"/>
